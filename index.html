@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+</head>
+<style>
+    body{
+        margin:0;
+        padding:0;
+    }
+    .box{
+        background-color: white;
+    }
+    .error{
+      color:red;
+    }
+  
+    
+ body, .btn,.kotak,th{
+    background: #ff9966;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #ff5e62, #ff9966);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #ff5e62, #ff9966); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  }
+    
+ 
+</style>
+<body>
+     <div id="app">
+          <main>
+            <router-view v-bind:items="film" v-on:submitfilm="submitfilm"  v-on:hapus="hapusfilm"></router-view>
+          </main>
+
+
+
+
+         </div>
+         
+         <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+         <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+         <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>  
+        <script>
+           Vue.config.devtools=true;
+           const detailFilm={
+             template:`<div class="container">
+                        <div class="card rounded shadow">
+                          <img :src="url_gambar(detailfilm.gambar)" class="card-img-top" alt="gambar" height="250">
+                          <div class="card-body">
+                            <h3 class="card-title text-center">{{ detailfilm.judul }}</h3>
+                            <p class="card-text">{{ detailfilm.deskripsi }}</p>
+                            <p class="card-text"><small><router-link to="/">Kembali</router-link></small></p>
+                          </div>
+                      </div>
+                </div>`,
+                data(){
+                  return{
+                    detailfilm:{}
+                  }
+                },
+                created(){
+                  this.filterkelas()
+                },
+                methods:{
+                  filterkelas(){
+                    let film=JSON.parse(localStorage.getItem('film'))
+                    let id=this.$route.params.idfilm
+                    let item=film.filter(f=>f.id==id)
+                    this.detailfilm=item[0]
+                  },
+                  url_gambar:function(gambar){
+                    return '../image/'+gambar
+                  }
+                }
+           }
+
+
+           const NotFound={
+                template:'<div><h1 class="display-2 text-center text-white mt-4">Page Not Found!</h1></div>'
+            }
+           const Film={
+             props:['items'],
+             template:`
+             <div class="container">
+             <div class="box shadow-lg rounded-lg mt-4" style="width:500px; margin:0 auto;  border:1px solid salmon ; padding:30px">
+                
+                <form  class="mt-3" v-on:submit.prevent="submitfilm" >
+                  <h3 class=" text-center " style="margin-bottom:30px; font-weight:normal;">Entry Data Film</h3>
+                  <div class="form-group row">
+                    <label for="inputtext" class="col-sm-2 col-form-label">Judul</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="inputtext" v-model="film.judul" autocomplete="off">
+                      <div class="error" v-if="error.judul"><small>{{ error.judul }}</small></div>
+                      </div>
+                  </div>
+  
+                  <div class="form-group row">
+                    <label for="input" class="col-sm-2 col-form-label">Deskripsi</label>
+                    <div class="col-sm-10">
+                      <textarea name="" class="form-control " v-model="film.deskripsi" ></textarea>
+                      <div class="error" v-if="error.judul"><small>{{ error.deskripsi }}</small></div>
+                      </div>
+                  </div>
+                
+                  <div class="form-group row">
+                    <label for="inputPassword3" class="col-sm-2 col-form-label ">Gambar</label>
+                    <div class="col-sm-10  ">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile01" v-on:change="upload" ref="gambar">
+                        <label class="custom-file-label" for="inputGroupFile01"></label>
+                       
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <img :src="previewimg" v-if="previewimg" width=200 height=150 class="mx-auto  rounded-lg mt-2">
+                      </div>
+                        
+                  <div class="form-group row">
+                    <div class="col-sm-12 mx-auto text-center mt-2">
+                      <button type="submit" class="btn  w-100 text-white">Save</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
+             
+
+
+
+            <table class="table  table-bordered table-hover table-light mt-4 box shadow-lg " >
+              <thead>
+                <tr class="text-center text-white">
+                  <th scope="col" class="font-weight-normal">No</th>
+                  <th scope="col" class="font-weight-normal">Judul Film</th>
+                  <th scope="col" class="font-weight-normal">Gambar</th>
+                  <th scope="col" class="font-weight-normal">Aksi</th>
+                </tr>
+              </thead>
+              <template class="text-center" v-if="items.length">
+                <tr v-for="(item,index) of items" class="text-center">
+                  <td>{{ index+1 }}</td>
+                  <td>{{ item.judul }}</td>
+                  <td><img :src="'image/'+item.gambar" width="60"/></td>
+                  <td>
+                    <a href="" v-on:click.prevent="$emit('hapus',item.id)" class="text-decoration-none text-dark mr-2 "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                      </svg>     
+                     
+                    </a>
+                    <router-link :to="'/film/'+item.id"class="text-decoration-none text-dark" >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-richtext" viewBox="0 0 16 16">
+                        <path d="M7.5 3.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047L11 4.75V7a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 7v-.5s1.54-1.274 1.639-1.208zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                        <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                        <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                      </svg>
+                    
+                    </router-link>
+                  </td>
+                </tr>
+              </template>
+              
+            </table>
+
+
+
+             </div>
+             
+             
+             `,
+             data:function(){
+               return{
+                 film:{
+                   judul:'',
+                   deskripsi:'',
+                   gambar:''
+                 },
+                 previewimg:'',
+                 error:{
+                        judul:'',
+                        deskripsi:''
+                    }
+               }
+             },
+             created(){
+                this.kelas=JSON.parse(localStorage.getItem('kelas')) || []
+             },
+             methods:{
+               hapusfilm:function(id){
+                this.film=this.film.filter(item=>item.id != id)
+                localStorage.setItem('film',JSON.stringify(this.film))
+                swal({
+                       
+                       text:'Data film berhasil dihapus',
+                       icon:'warning'
+                   })
+              },
+               submitfilm:function(){
+                if(this.film.judul==''){
+                        this.error.judul='judul is required'
+                    }
+                    if(this.film.deskripsi==''){
+                        this.error.deskripsi='Desrkipsi is required'
+                    }
+                 if(this.film.judul && this.film.deskripsi){
+                   const data={
+                     id:uuidv4(),
+                     judul:this.film.judul,
+                     deskripsi:this.film.deskripsi,
+                     gambar:this.film.gambar
+                   }
+                   this.$emit('submitfilm',data)
+                   this.film.judul=''
+                   this.film.deskripsi=''
+                   this.film.gambar=''
+                   this.previewimg=''
+                   this.$refs.gambar.value=''
+                   this.error.deskripsi=''
+                   this.error.judul=''
+                 }
+               },
+               upload:function(event){
+                 const namagambar=event.target.files[0].name
+                 this.film.gambar=namagambar
+                 this.previewimg=URL.createObjectURL(event.target.files[0])
+               },
+               url_gambar:function(gambar){
+                 return 'image/'+gambar
+               }
+             }
+
+           }
+
+           
+           
+
+           const routes=[
+            {path:'/',component:Film},
+            {path:'/film/:idfilm',component:detailFilm},
+            {path:'*',component:NotFound}
+           ]
+
+           const router= new VueRouter({
+             routes,
+             mode:'history'
+           })
+
+           const app = new Vue({
+             el:'#app',
+             router,
+             mode:'history',
+             data:{
+               film:[] //meanampung film
+             },
+             created(){
+                this.film=JSON.parse(localStorage.getItem('film')) || []
+                },
+             methods:{
+              hapusfilm:function(id){
+                        this.film=this.film.filter(item=>item.id != id)
+                       localStorage.setItem('film',JSON.stringify(this.film))
+                        swal({
+                          text:'Data kelas berhasil dihapus',
+                          icon:'warning'
+                      })
+                    },
+               submitfilm:function(data){
+                this.film.push(data)
+                localStorage.setItem('film',JSON.stringify(this.film))
+                swal({
+                          title:data.judul,
+                          text:'Data Film berhasil disimpan',
+                          icon:'success'
+                      })
+               }
+             }
+           })
+        </script>
+
+
+
+      </body>
+</html>
