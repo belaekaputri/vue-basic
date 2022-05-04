@@ -2,7 +2,7 @@
 
 ### [Baledemy (Vuejs Indonesia)](https://www.youtube.com/watch?v=OlHYirmHhK0&list=PL9At9z2rvOC-Z6Gt8uO1XMp4oyMlE3gml)
 
-### Jalankan dengan Live Server (VS)
+### Jalankan dengan Live Server (VS Code)
 * Buka VS Klik pojok kanan bawah (Go Live)
 * hapus "index.html" di url lalu enter
 ### Jalankan dengan PHP server
