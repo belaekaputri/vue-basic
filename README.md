@@ -1,6 +1,6 @@
 # vue basic create,read,delete dengan localstorage
 
-### [Baledemy (Vuejs Indonesia)](https://www.youtube.com/watch?v=OlHYirmHhK0&list=PL9At9z2rvOC-Z6Gt8uO1XMp4oyMlE3gml)
+### [Baledemy (Playlist Tutorial Vuejs Indonesia)](https://www.youtube.com/watch?v=OlHYirmHhK0&list=PL9At9z2rvOC-Z6Gt8uO1XMp4oyMlE3gml)
 
 ### Jalankan dengan Live Server (VS Code)
 * Buka VS Klik pojok kanan bawah (Go Live)
